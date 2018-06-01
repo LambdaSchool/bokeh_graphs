@@ -7,7 +7,7 @@ class Edge:
 class Vertex:
     def __init__(self, name, **pos):
         self.name = name
-        self.color = 'red'
+        self.color = 'white'
         self.pos = pos
         self.edges = []
 
@@ -71,8 +71,33 @@ class Graph:
             for x in range(width):
                 self.vertexes.append(grid[y][x])
 
+    def BFS(self, start, reset=True):
+        color = "#"+''.join([random.choice('0123456789ABCDEF') for j in range(6)])
+        queue = []
+
+        queue.append(start)
+
+        while len(queue) > 0:
+            vertex = queue[0]
+
+            for edge in vertex.edges:
+                dest = edge.destination
+                if dest.color == 'white':
+                    dest.color = color
+                    queue.append(dest)
+
+            queue.pop(0)
+
+    def GetConnectedComponents(self):
+        for vertex in self.vertexes:
+            if vertex.color == 'white':
+                self.BFS(vertex)
+
     def GetColors(self):
         return [v.color for v in self.vertexes]
 
     def GetPositions(self):
         return [v.pos for v in self.vertexes]
+
+    def GetNames(self):
+        return [v.name for v in self.vertexes]
