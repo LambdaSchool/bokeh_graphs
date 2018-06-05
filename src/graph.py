@@ -15,19 +15,19 @@ class Graph:
     def __init__(self):
         self.vertexes = []
 
-    def SetUpDebug(self):
-        debugVertex1 = Vertex('debug1', x=3, y=3)
-        debugVertex2 = Vertex('debug2', x=8, y=8)
-        debugVertex3 = Vertex('debug3', x=3, y=8)
-        debugVertex4 = Vertex('debug4', x=8, y=3)
-        debugVertex1.edges = [Edge(debugVertex2), Edge(debugVertex3)]
-        debugVertex2.edges = [Edge(debugVertex4)]
-        self.vertexes = [debugVertex1, debugVertex2, debugVertex3, debugVertex4]
+    def set_up_debug(self):
+        debut_vertex_1 = Vertex('debug1', x=3, y=3)
+        debug_vertex_2 = Vertex('debug2', x=8, y=8)
+        debug_vertex_3 = Vertex('debug3', x=3, y=8)
+        debug_vertex_4 = Vertex('debug4', x=8, y=3)
+        debut_vertex_1.edges = [Edge(debug_vertex_2), Edge(debug_vertex_3)]
+        debug_vertex_2.edges = [Edge(debug_vertex_4)]
+        self.vertexes = [debut_vertex_1, debug_vertex_2, debug_vertex_3, debug_vertex_4]
 
-    def Randomize(self, width, height, pxBox, probability):
+    def randomize(self, width, height, px_box, probability):
         # Helper function to set up two-way edges
         
-        def connectVerts(v0, v1):
+        def connect_verts(v0, v1):
             v0.edges.append(Edge(v1))
             v1.edges.append(Edge(v0))
 
@@ -39,6 +39,7 @@ class Graph:
             row = []
             for x in range(width):
                 v = Vertex('v' + str(count + 1))
+                count += 1
                 row.append(v)
             grid.append(row)
 
@@ -48,22 +49,22 @@ class Graph:
                 # connect down
                 if y < height - 1:
                     if random.random() > probability:
-                        connectVerts(grid[y][x], grid[y+1][x])
+                        connect_verts(grid[y][x], grid[y+1][x])
                 # connect right
                 if x < width - 1:
                     if random.random() > probability:
-                        connectVerts(grid[y][x], grid[y][x+1])
+                        connect_verts(grid[y][x], grid[y][x+1])
 
         # Last pass, set the x and y coordinates for drawing
-        boxBuffer = 0.8
-        boxInner = pxBox * boxBuffer
-        boxInnerOffset = (pxBox - boxInner) / 2
+        box_buffer = 0.8
+        box_inner = px_box * box_buffer
+        box_inner_offset = (px_box - box_inner) / 2
 
         for y in range(height):
             for x in range(width):
                 grid[y][x].pos = {
-                    'x': (x * pxBox + boxInnerOffset + random.random() * boxInner),
-                    'y': (y * pxBox + boxInnerOffset + random.random() * boxInner)
+                    'x': (x * px_box + box_inner_offset + random.random() * box_inner),
+                    'y': (y * px_box + box_inner_offset + random.random() * box_inner)
                 }
         
         # Finally, add everything in our grid to the vertexes in this graph
@@ -71,10 +72,11 @@ class Graph:
             for x in range(width):
                 self.vertexes.append(grid[y][x])
 
-    def BFS(self, start, reset=True):
+    def breadth_first_search(self, start, reset=True):
         color = "#"+''.join([random.choice('0123456789ABCDEF') for j in range(6)])
+        
+        start.color = color
         queue = []
-
         queue.append(start)
 
         while len(queue) > 0:
@@ -88,16 +90,16 @@ class Graph:
 
             queue.pop(0)
 
-    def GetConnectedComponents(self):
+    def get_connected_components(self):
         for vertex in self.vertexes:
             if vertex.color == 'white':
-                self.BFS(vertex)
+                self.breadth_first_search(vertex)
 
-    def GetColors(self):
+    def get_colors(self):
         return [v.color for v in self.vertexes]
 
-    def GetPositions(self):
+    def get_positions(self):
         return [v.pos for v in self.vertexes]
 
-    def GetNames(self):
+    def get_names(self):
         return [v.name for v in self.vertexes]
