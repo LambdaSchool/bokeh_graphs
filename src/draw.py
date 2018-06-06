@@ -6,7 +6,14 @@ from bokeh.models import GraphRenderer, StaticLayoutProvider, Circle, LabelSet, 
 
 from graph import Graph, Edge, Vertex
 
-# Get a list of the indexes of the start and end of points of the edges
+def setup_plot():
+                                                    # TODO: Magic Numbers
+    plot = figure(title='Graph Layout Demonstration', x_range=(0,10), y_range=(0,10), 
+                tools='', toolbar_location=None)
+    plot.axis.visible=False
+    plot.grid.visible=False
+
+    return plot
 
 def setup_graph_renderer(graph):
     N = len(graph.vertexes)
@@ -41,19 +48,6 @@ def get_edge_indexes(graph):
     return dict(start=start_indices, end=end_indices)
 
 def setup_labels(graph):
-    pass
-
-def main():
-    graph = Graph()
-    graph.randomize(5, 4, 2, 0.6)
-    graph.get_connected_components()
-                                                        # TODO: Magic Numbers
-    plot = figure(title='Graph Layout Demonstration', x_range=(0,10), y_range=(0,10), 
-                tools='', toolbar_location=None)
-    plot.axis.visible=False
-    plot.grid.visible=False
-    plot.renderers.append(setup_graph_renderer(graph))
-
     # add the labels
     labelSource = ColumnDataSource(data=dict(
                                     x=[pos['x'] for pos in graph.get_positions()],
@@ -64,7 +58,18 @@ def main():
     labels = LabelSet(x='x', y='y', text='names', level='glyph',
                 text_align='center', text_baseline='middle', source=labelSource, render_mode='canvas')
 
-    plot.add_layout(labels)
+    return labels
+
+def main():
+    graph = Graph()
+    graph.randomize(5, 4, 2, 0.6)
+    graph.get_connected_components()
+    
+    plot = setup_plot()
+
+    plot.renderers.append(setup_graph_renderer(graph))
+
+    plot.add_layout(setup_labels(graph))
 
     output_file('../graph.html')
     show(plot)
